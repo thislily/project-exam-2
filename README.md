@@ -35,9 +35,8 @@ A web application for managing venues and bookings, built with **React**, **Tail
 
 
 ### Running the App
-- Start the development server:
+Start the development server:
 
-Start:
   ```bash
   npm start
 ```
