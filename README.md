@@ -1,4 +1,4 @@
-# My Venue App
+# Holidaze
 
 A web application for managing venues and bookings, built with **React**, **Tailwind CSS**, and **React Router**.  
 
