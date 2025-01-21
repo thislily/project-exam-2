@@ -22,11 +22,11 @@ A web application for managing venues and bookings, built with **React**, **Tail
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/my-venue-app.git
+   git clone [https://github.com/thislily/project-exam-2.git](https://github.com/thislily/project-exam-2.git)
    
 2. Navigate into the project directory:
    ```bash
-   cd my-venue-app
+   cd project-exam-2
    
 
 3. Install dependencies:
