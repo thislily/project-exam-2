@@ -14,7 +14,7 @@ function Layout() {
     <div className=" font-body bg-gray-100 text-black">
       <Header />
 
-      <main className="flex-grow p-4 min-h-screen mx-auto max-w-7xl bg-gray-100 pb-16 mt-16">
+      <main className="flex-grow min-h-screen mx-auto max-w-7xl bg-gray-100 pb-16 mt-16">
         {/* This is where page content will be rendered */}
         <Outlet />
       </main>
