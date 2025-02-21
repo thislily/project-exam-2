@@ -1,11 +1,14 @@
-import React from 'react'
+import React from "react";
 
-function Button() {
+function Button({ text, onClick }) {
   return (
-    <div>
-      
-    </div>
-  )
+    <button
+      onClick={onClick}
+      className="bg-white hover:bg-breeze text-black border-breeze border-4 font-heading font-semibold p-4 px-6 rounded-md"
+    >
+      {text}
+    </button>
+  );
 }
 
-export default Button
+export default Button;

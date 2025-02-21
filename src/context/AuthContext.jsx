@@ -1,10 +1,11 @@
 // AuthContext.jsx
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthModalOpen, setAuthModalOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const openAuthModal = () => {
     console.log("openAuthModal called");
@@ -16,10 +17,30 @@ export const AuthProvider = ({ children }) => {
     setAuthModalOpen(false);
   };
 
-  const handleLoginSuccess = () => {
-    console.log("Login successful");
-    // You can add more logic here, like updating a global user state.
+  // When login is successful, update the user state and store user data in localStorage.
+  const handleLoginSuccess = (userData) => {
+    console.log("Login successful", userData);
+    setUser(userData);
+    // Save both the access token and user data in localStorage.
+    localStorage.setItem("accessToken", userData.accessToken);
+    localStorage.setItem("user", JSON.stringify(userData));
   };
+
+  const logout = () => {
+    console.log("Logging out");
+    setUser(null);
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+  };
+
+  // When the app loads, check localStorage for an access token and user data.
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const storedUser = localStorage.getItem("user");
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
     <AuthContext.Provider
@@ -28,6 +49,8 @@ export const AuthProvider = ({ children }) => {
         openAuthModal,
         closeAuthModal,
         handleLoginSuccess,
+        user,
+        logout,
       }}
     >
       {children}
