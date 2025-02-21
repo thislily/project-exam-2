@@ -12,4 +12,5 @@ export const accessToken = localStorage.getItem("accessToken");
 export const headers = {
   Authorization: `Bearer ${accessToken}`,
   "X-Noroff-API-Key": apiKey,
+  "Content-Type": "application/json",
 };
