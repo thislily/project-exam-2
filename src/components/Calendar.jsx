@@ -51,7 +51,7 @@ function Calendar({ bookings = [], onDateChange }) {
         inline
         minDate={new Date()}
         excludeDates={bookedDates}
-        className="text-black"
+        className="text-black bg-harbour rounded p-2"
       />
       {/* If both dates selected, show a summary below */}
       {startDate && endDate && (
