@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
+import { X } from "lucide-react";
 
 const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
   const [formData, setFormData] = useState({
@@ -51,7 +52,10 @@ const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
     }
     setFormData((prev) => ({
       ...prev,
-      media: [...prev.media, { url: newImageUrl, alt: newImageAlt || "Venue image" }],
+      media: [
+        ...prev.media,
+        { url: newImageUrl, alt: newImageAlt || "Venue image" },
+      ],
     }));
     setNewImageUrl("");
     setNewImageAlt("");
@@ -79,26 +83,35 @@ const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
     return (
       <Dialog
         open={isOpen}
-        onClose={() => { onClose(); setConfirmDelete(false); }}
+        onClose={() => {
+          onClose();
+          setConfirmDelete(false);
+        }}
         className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
       >
         <Dialog.Panel className="bg-white p-6 rounded-lg max-w-md w-full max-h-screen overflow-y-auto relative">
           <button
-            onClick={() => { onClose(); setConfirmDelete(false); }}
+            onClick={() => {
+              onClose();
+              setConfirmDelete(false);
+            }}
             className="absolute top-2 right-2 text-gray-500 hover:text-black"
           >
-            X
+            <X size={24} />
           </button>
           <Dialog.Title className="text-xl font-semibold mb-4">
             Delete Venue
           </Dialog.Title>
           <p className="mb-4 text-warning">
-            Are you sure you want to delete this venue? This action cannot be undone.
+            Are you sure you want to delete this venue? This action cannot be
+            undone.
           </p>
           <div className="flex justify-end gap-2">
             <button
               type="button"
-              onClick={async () => { await onDelete(); }}
+              onClick={async () => {
+                await onDelete();
+              }}
               className="px-4 py-2 bg-warning text-white rounded"
             >
               Yes, Delete
@@ -120,12 +133,18 @@ const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
   return (
     <Dialog
       open={isOpen}
-      onClose={() => { onClose(); setConfirmDelete(false); }}
+      onClose={() => {
+        onClose();
+        setConfirmDelete(false);
+      }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
     >
       <Dialog.Panel className="bg-white p-6 rounded-lg max-w-md w-full max-h-screen overflow-y-auto relative">
         <button
-          onClick={() => { onClose(); setConfirmDelete(false); }}
+          onClick={() => {
+            onClose();
+            setConfirmDelete(false);
+          }}
           className="absolute top-2 right-2 text-gray-500 hover:text-black"
         >
           X
@@ -250,7 +269,10 @@ const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
             </button>
             <button
               type="button"
-              onClick={() => { onClose(); setConfirmDelete(false); }}
+              onClick={() => {
+                onClose();
+                setConfirmDelete(false);
+              }}
               className="px-4 py-2 bg-gray-300 text-black rounded"
             >
               Cancel

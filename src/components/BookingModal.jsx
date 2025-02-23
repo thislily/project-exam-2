@@ -1,6 +1,7 @@
 import React from "react";
 import { Dialog } from "@headlessui/react";
 import Calendar from "./Calendar";
+import { X } from "lucide-react";
 
 /**
  * 
@@ -62,7 +63,7 @@ const BookingModal = ({
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-black"
         >
-          X
+          <X size={24} />
         </button>
         {bookingConfirmed ? (
           <div>

@@ -37,7 +37,7 @@ const VenueDetails = ({ venue, userBookings, onEditBooking }) => {
               </span>
               <button
                 onClick={() => onEditBooking(booking)}
-                className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
+                className="px-2 py-1 text-sm bg-harbour text-white rounded"
               >
                 Edit Booking
               </button>
