@@ -33,8 +33,9 @@ function AuthModal() {
   const [loading, setLoading] = useState(false);
   // Holds the new user's name to display the welcome reminder
   const [newUserName, setNewUserName] = useState("");
+  
 
-  // Automatically clear the welcome reminder after 30 seconds
+  // Automatically clear the welcome new user reminder after 30 seconds
   useEffect(() => {
     if (newUserName) {
       const timer = setTimeout(() => {
@@ -43,6 +44,7 @@ function AuthModal() {
       return () => clearTimeout(timer);
     }
   }, [newUserName]);
+
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -140,7 +142,9 @@ function AuthModal() {
             {isRegistering ? "Register" : "Login"}
           </h2>
           <p className="text-center mt-4">
-            {isRegistering ? "Already have an account?" : "Don't have an account?"}{" "}
+            {isRegistering
+              ? "Already have an account?"
+              : "Don't have an account?"}{" "}
             <button
               onClick={() => setIsRegistering(!isRegistering)}
               className="text-blue-600 hover:underline"
@@ -203,7 +207,7 @@ function AuthModal() {
       {/* Welcome Reminder Box (only appears after successful registration) */}
       {newUserName && (
         <div className="fixed bottom-4 font-heading right-4 border border-gray-300 p-4 rounded-md bg-white shadow-lg z-50">
-          <Link to="/profile" className="text-blue-600">
+          <Link to={`/profile/${newUserName}`} className="text-blue-600">
             Welcome {newUserName}, <br />
             Your profile is currently blank. <br />
             Feel free to change it here.

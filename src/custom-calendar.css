@@ -1,0 +1,15 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
+
+/* custom-calendar.css */
+.custom-calendar .react-datepicker__header {
+  background-color: #BDD9BF; /* Optional: change header background */
+  font-family: 'Mulish', sans-serif; /* Replace with your desired font */
+  font-size: 16px;  /* Adjust font size as needed */
+  color: black;   /* Set your desired text color */
+}
+
+.custom-calendar .react-datepicker__current-month {
+  font-family: 'Mulish', sans-serif;
+  font-size: 18px;  /* Slightly larger for emphasis */
+  color: black;   /* Set your desired text color */
+}

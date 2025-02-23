@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "../custom-calendar.css"; 
+
 
 function Calendar({ bookings = [], onDateChange }) {
   const [startDate, setStartDate] = useState(null);
@@ -51,12 +53,15 @@ function Calendar({ bookings = [], onDateChange }) {
         inline
         minDate={new Date()}
         excludeDates={bookedDates}
-        className="text-black bg-harbour rounded p-2"
+        className="text-black rounded p-2"
+        calendarClassName="custom-calendar" // <-- custom class for the calendar
       />
+
       {/* If both dates selected, show a summary below */}
       {startDate && endDate && (
         <p className="mt-2 text-black">
-          You selected: {startDate.toLocaleDateString()} – {endDate.toLocaleDateString()}
+          You selected: {startDate.toLocaleDateString()} –{" "}
+          {endDate.toLocaleDateString()}
         </p>
       )}
     </div>
@@ -64,4 +69,3 @@ function Calendar({ bookings = [], onDateChange }) {
 }
 
 export default Calendar;
-

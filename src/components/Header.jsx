@@ -13,7 +13,7 @@ function Header() {
   };
 
   return (
-    <div className="bg-harbour text-white fixed top-0 w-full z-10">
+    <div className="bg-harbour text-white fixed top-0 w-full z-10 mb-16">
       <header className="bg-harbour text-white font-body p-2 max-w-7xl flex items-end justify-between mx-auto">
         {/* Logo linking to home */}
         <Link to="/">
@@ -24,20 +24,22 @@ function Header() {
 
         <nav className="flex items-center gap-4">
           {!user && (
-            <Link to="/create-venue" className="text-base font-medium hover:underline">
-            List your Property
-          </Link>
+            <Link
+              to="/create-venue"
+              className="text-base font-medium hover:underline"
+            >
+              List your Property
+            </Link>
           )}
           {user && (
             <p className="text-base font-medium hidden sm:block">
-              Welcome, {user.name.split(" ")[0]}
+              Hello, {user.name.split(" ")[0]}!
             </p>
           )}
 
           {user ? (
             // When logged in, show the avatar with dropdown menu
             <div className="relative">
-
               <img
                 src={
                   user.avatar?.url ||
@@ -50,20 +52,21 @@ function Header() {
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-48 bg-white text-black font-body font-medium rounded-md rounded-t-none shadow-lg">
                   <Link
-                    to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    to={`/profile/${user.name}`}
+                    className="block px-4 py-2 hover:bg-breeze"
                   >
                     View Profile
                   </Link>
+
                   <Link
                     to="/create-venue"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 hover:bg-breeze"
                   >
                     List your Property
                   </Link>
                   <button
                     onClick={logout}
-                    className="w-full text-left block px-4 py-2 rounded-b-md hover:bg-gray-100"
+                    className="w-full text-left block px-4 py-2 rounded-b-md hover:bg-breeze"
                   >
                     Logout
                   </button>
@@ -72,7 +75,7 @@ function Header() {
             </div>
           ) : (
             // When not logged in, show the Log in button
-            <ButtonMini text="Log in" onClick={openAuthModal} />
+            <ButtonMini text="Log in" onClick={openAuthModal} className="border-breeze hover:bg-breeze text-black" />
           )}
         </nav>
       </header>

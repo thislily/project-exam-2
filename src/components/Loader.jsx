@@ -2,7 +2,7 @@ import React from "react";
 
 function Loader() {
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center pt-[100px]">
       {/* Spinner */}
       <div className="w-8 h-8 border-4 border-sunbeam border-t-transparent rounded-full animate-spin"></div>
       {/* Loading Text */}

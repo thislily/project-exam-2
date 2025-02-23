@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { venuesUrl, headers } from "../service/api";
 import VenueCard from "../components/VenueCard";
-import { Loader } from "lucide-react";
+import Loader from "../components/Loader";
 
 function HomePage() {
   const [venues, setVenues] = useState([]);
@@ -114,7 +114,7 @@ function HomePage() {
   };
 
   if (loading && page === 1) {
-    return <p className="text-center mt-4">Loading venues...</p>;
+    return <Loader />;
   }
 
   if (error) {
