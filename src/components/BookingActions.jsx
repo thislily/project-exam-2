@@ -1,7 +1,6 @@
 import React from "react";
 import Calendar from "./Calendar";
 import Button from "./Button";
-import VenueManagerButton from "./VenueManagerButton";
 
 /**
  * 
@@ -19,7 +18,6 @@ import VenueManagerButton from "./VenueManagerButton";
 const BookingActions = ({ id, bookings, selectedDates, onDateChange, onBookNow }) => {
   return (
     <div className="w-[400px] max-md:w-full mx-auto flex flex-col justify-center gap-5">
-      <VenueManagerButton owner={null} />
       <h2 className="text-xl font-medium text-center text-black">Availability</h2>
       <Calendar
         venueId={id}
@@ -29,7 +27,7 @@ const BookingActions = ({ id, bookings, selectedDates, onDateChange, onBookNow }
       />
       <Button
         venueId={id}
-        className={"max-w-fit mx-auto"}
+        className={"max-w-fit mx-auto text-harbour border-4 border-harbour bg-white hover:bg-harbour hover:text-white"}
         text={"Book Now"}
         onClick={onBookNow}
       />

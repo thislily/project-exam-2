@@ -81,7 +81,7 @@ const EditProfileModal = ({ isOpen, onClose, profile, onProfileUpdate }) => {
 
   // Mini live preview component.
   const MiniProfilePreview = () => (
-    <div className="mt-6 p-4 border rounded bg-gray-50">
+    <div className="mt-6 p-4 border rounded bg-gray-50 font-body">
       <h3 className="text-lg font-semibold mb-2">Live Preview</h3>
       <div className="relative w-full h-[120px] overflow-hidden rounded mb-2">
         <img
@@ -100,7 +100,7 @@ const EditProfileModal = ({ isOpen, onClose, profile, onProfileUpdate }) => {
           <h4 className="text-xl font-medium">{profile.name}</h4>
           <p className="text-sm">{formData.bio || "No bio provided."}</p>
           {profile.venueManager || formData.upgrade ? (
-            <p className="text-sm text-green-600 font-semibold">
+            <p className="text-sm text-harbour font-semibold">
               Venue Manager
             </p>
           ) : null}

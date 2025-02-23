@@ -12,7 +12,6 @@ import "../custom-calendar.css";
  * @param {Function} props.onDateChange - The function to run when the date range changes.
  * @param {Object} props.selectedDates - The currently selected date range.
  * @returns {JSX.Element} The Calendar component.
- * 
  */
 
 function Calendar({ bookings = [], onDateChange, selectedDates }) {
@@ -31,7 +30,6 @@ function Calendar({ bookings = [], onDateChange, selectedDates }) {
   // Convert bookings into an array of Date objects to exclude.
   useEffect(() => {
     const allBooked = [];
-
     bookings.forEach((booking) => {
       if (booking.dateFrom && booking.dateTo) {
         const start = new Date(booking.dateFrom);
@@ -43,18 +41,18 @@ function Calendar({ bookings = [], onDateChange, selectedDates }) {
         }
       }
     });
-
     setBookedDates(allBooked);
   }, [bookings]);
 
   // Handle user selecting a date range.
   const handleChange = (dates) => {
     const [start, end] = dates;
+    // If no end date, default end to start (one-day booking)
+    const finalEnd = end || start;
     setStartDate(start);
-    setEndDate(end);
-
+    setEndDate(finalEnd);
     if (onDateChange) {
-      onDateChange({ start, end });
+      onDateChange({ start, end: finalEnd });
     }
   };
 
