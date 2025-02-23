@@ -31,6 +31,8 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
+    // Redirect to the home page after logging out
+    window.location.href = "/";
   };
 
   // When the app loads, check localStorage for an access token and user data.

@@ -8,9 +8,9 @@ function StarRating({ rating }) {
     <div className="flex" aria-label={`${rating} out of 5 stars`}>
       {[...Array(5)].map((_, index) => (
         index < fullStars ? (
-          <Star key={index} className="text-yellow-400 w-6 h-6" fill="#FFD700" />
+          <Star key={index} className="text-sunbeam w-6 h-6" fill="#FFC857" />
         ) : hasHalfStar && index === fullStars ? (
-          <StarHalf key={index} className="text-yellow-400 w-6 h-6" fill="#FFD700" />
+          <StarHalf key={index} className="text-sunbeam w-6 h-6" fill="#FFC857" />
         ) : (
           <StarOutline key={index} className="text-gray-300 w-6 h-6" />
         )
