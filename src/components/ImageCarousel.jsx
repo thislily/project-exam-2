@@ -66,7 +66,7 @@ function ImageCarousel({ images = [] }) {
 
   // Otherwise, display the normal carousel
   return (
-    <div className="relative w-full h-[500px] bg-white rounded-xl max-md:h-[300px] overflow-hidden shadow-md">
+    <div className="relative w-full h-[500px] bg-white rounded-t-xl max-md:h-[300px] overflow-hidden shadow-md">
       {/* Main Image */}
       <img
         src={currentImage.url}

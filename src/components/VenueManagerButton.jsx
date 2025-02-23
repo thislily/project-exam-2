@@ -13,7 +13,7 @@ function VenueManagerButton({ owner }) {
   return (
     <Link
       to={`/profile/${encodeURIComponent(name)}`}
-      className="flex flex-col text-base leading-loose text-black rounded-md max-w-[360px] no-underline"
+      className="flex flex-col text-base text-black rounded-md max-w-[360px] no-underline"
       aria-label={`Go to ${name}'s profile`}
     >
       <div className="flex gap-4 justify-between align-middle px-4 py-2 w-full bg-white rounded-md shadow-md">

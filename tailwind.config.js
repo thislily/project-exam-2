@@ -10,6 +10,7 @@ module.exports = {
       },
       boxShadow: { // <-- Correct key name
         md: "0 10px 15px rgba(0, 0, 0, 0.1)",
+        lg: "0 10px 15px rgba(0, 0, 0, 0.25)",
       },
       colors: {
         "breeze": "#BDD9BF",

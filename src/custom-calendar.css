@@ -13,3 +13,9 @@
   font-size: 18px;  /* Slightly larger for emphasis */
   color: black;   /* Set your desired text color */
 }
+
+.custom-calendar.react-datepicker__day--disabled,
+.custom-calendar .react-datepicker__day--excluded {
+  color: #CA4345;
+  text-decoration: line-through;  /* Optional: change disabled day color */
+}
