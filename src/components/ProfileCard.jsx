@@ -1,7 +1,7 @@
 import React from "react";
 import ButtonMini from "./ButtonMini";
 
-function ProfileCard({ profile }) {
+function ProfileCard({ profile, onEdit, onUpgrade }) {
   return (
     <div className="overflow-hidden rounded-2xl shadow-md w-[800px] max-w-full mx-auto bg-white">
       <div className="overflow-hidden relative w-full h-[200px]">
@@ -30,11 +30,20 @@ function ProfileCard({ profile }) {
             {profile.bio || "No bio provided."}
           </p>
         </div>
-        <ButtonMini
-          text="Edit"
-          onClick={() => console.log("Edit button clicked")}
-          className="text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-white h-12 px-4"
-        />
+        <div className="flex flex-col gap-2">
+          <ButtonMini
+            text="Edit"
+            onClick={onEdit}
+            className="text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-white h-12 px-4"
+          />
+          {!profile.venueManager && (
+            <ButtonMini
+              text="Upgrade to Manager"
+              onClick={onUpgrade}
+              className="text-white bg-green-500 hover:bg-green-600 h-12 px-4"
+            />
+          )}
+        </div>
       </div>
     </div>
   );
