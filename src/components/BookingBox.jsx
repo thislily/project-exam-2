@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { User } from "lucide-react";
+import { User, ChevronRight } from "lucide-react";
 
 /**
  *
@@ -21,7 +21,7 @@ const BookingBox = ({ booking }) => {
   return (
     <Link
       to={`/profile/${encodeURIComponent(customer.name)}`}
-      className="flex gap-4 items-center p-4 bg-white rounded-md shadow-md hover:shadow-lg transition"
+      className="flex justify-between gap-4 items-center p-4 bg-white min-w-[300px] rounded-md shadow-md hover:shadow-lg transition"
       aria-label={`View ${customer.name}'s profile`}
     >
       {customer.avatar && customer.avatar.url ? (
@@ -37,6 +37,7 @@ const BookingBox = ({ booking }) => {
         <div className="font-medium">{customer.name}</div>
         <div className="text-sm text-gray-500">{bookingDates}</div>
       </div>
+      <ChevronRight size={32} className="w-8 h-8 my-auto" />
     </Link>
   );
 };

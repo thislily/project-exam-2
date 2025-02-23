@@ -8,14 +8,15 @@ import VenueDetails from "../components/VenueDetails";
 import BookingActions from "../components/BookingActions";
 import BookingModal from "../components/BookingModal";
 import UpdateVenueModal from "../components/UpdateVenueModal";
+import VenueManagerButton from "../components/VenueManagerButton";
+import BookingBox from "../components/BookingBox";
 
 /**
- *
- * @name VenuePage
- * @description The venue page component.
- * @returns {JSX.Element} The VenuePage component.
- *
- */
+* @name VenuePage
+* @description A page to view a venue.
+* @returns {JSX.Element} The VenuePage component.
+*
+*/
 
 const daysBetween = (start, end) => {
   const msPerDay = 1000 * 60 * 60 * 24;
@@ -59,19 +60,20 @@ function VenuePage() {
         setLoading(false);
       }
     }
-    fetchVenue();
-  }, [id]);
+    if (user) {
+      fetchVenue();
+    }
+  }, [id, user]);
 
   useEffect(() => {
-  if (venue && venue.name) {
-    document.title = `${venue.name} | Holidaze`;
-  }
-}, [venue]);
-
+    if (venue && venue.name) {
+      document.title = `${venue.name} | Holidaze`;
+    }
+  }, [venue]);
 
   const calculateCost = (dateFrom, dateTo) => {
     const nights = daysBetween(new Date(dateFrom), new Date(dateTo));
-    return nights * venue.price;
+    return nights * (venue ? venue.price : 0);
   };
 
   const newTotalCost =
@@ -193,7 +195,7 @@ function VenuePage() {
 
   if (loading) return <p className="text-center mt-4">Loading venue...</p>;
   if (error) return <p className="text-center mt-4 text-red-500">{error}</p>;
-  if (!venue) return <p className="text-center mt-4">No venue data found</p>;
+  if (!venue) return null;
 
   const userBookings =
     user && venue.bookings
@@ -202,7 +204,55 @@ function VenuePage() {
         )
       : [];
 
-  const isOwner = venue.owner && user && venue.owner.name === user.name;
+  const isOwner =
+    venue && user && venue.owner && venue.owner.name === user.name;
+
+  // Right-side sections:
+  const nonOwnerRightSection = (
+    <>
+      <div className="mb-4">
+        <VenueManagerButton owner={venue.owner} />
+      </div>
+      <BookingActions
+        id={id}
+        bookings={venue.bookings}
+        selectedDates={selectedDates}
+        onDateChange={setSelectedDates}
+        onBookNow={() => {
+          if (!user) {
+            openAuthModal("Login to book this venue");
+          } else {
+            if (!editingBooking) setGuestCount(1);
+            setBookingModalOpen(true);
+            setBookingConfirmed(false);
+            setConfirmDelete(false);
+          }
+        }}
+      />
+    </>
+  );
+
+  const ownerRightSection = (
+    <div className="flex flex-col justify-between  h-full">
+      <div className="flex justify-center md:justify-end pb-6">
+        <button
+          onClick={() => setUpdateModalOpen(true)}
+          className="px-4 py-2 font-semibold font-heading border-4 border-harbour bg-white text-harbour hover:bg-harbour hover:text-white rounded"
+        >
+          Manage Venue
+        </button>
+      </div>
+      <div className="flex flex-wrap justify-center md:justify-end gap-4 mb-4">
+        {venue.bookings && venue.bookings.length > 0 ? (
+          venue.bookings.map((booking) => (
+            <BookingBox key={booking.id} booking={booking} />
+          ))
+        ) : (
+          <p>No current bookings.</p>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="container mx-auto p-6">
@@ -222,40 +272,15 @@ function VenuePage() {
       </header>
       <div className="mx-auto my-0 bg-white rounded-2xl max-w-[1000px] shadow-md">
         <ImageCarousel images={venue.media} />
-        <div className="flex gap-10 px-12 py-10 bg-white rounded-b-xl max-md:flex-col max-md:p-5 max-sm:p-4">
+        {/* Use flex-row for 2 columns on larger screens, flex-col on small screens */}
+        <div className="flex gap-10 px-12 py-10 bg-white rounded-b-xl max-md:flex-col max-md:px-5 max-sm:px-4">
           <VenueDetails
             venue={venue}
             userBookings={userBookings}
             onEditBooking={handleEditBooking}
           />
           <div className="w-[400px] max-md:w-full mx-auto flex flex-col">
-            {isOwner ? (
-              <div className="flex justify-end">
-                <button
-                  onClick={() => setUpdateModalOpen(true)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded"
-                >
-                  Manage Venue
-                </button>
-              </div>
-            ) : (
-              <BookingActions
-                id={id}
-                bookings={venue.bookings}
-                selectedDates={selectedDates}
-                onDateChange={setSelectedDates}
-                onBookNow={() => {
-                  if (!user) {
-                    openAuthModal("Login to book this venue");
-                  } else {
-                    if (!editingBooking) setGuestCount(1);
-                    setBookingModalOpen(true);
-                    setBookingConfirmed(false);
-                    setConfirmDelete(false);
-                  }
-                }}
-              />
-            )}
+            {isOwner ? ownerRightSection : nonOwnerRightSection}
           </div>
         </div>
       </div>

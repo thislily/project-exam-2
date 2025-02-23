@@ -51,7 +51,7 @@ function ProfileCard({ profile, onEdit, onUpgrade }) {
             <ButtonMini
               text="Upgrade to Manager"
               onClick={onUpgrade}
-              className="text-white bg-green-500 hover:bg-green-600 h-12 px-4"
+              className="text-harbour border-harbour bg-white hover:bg-harbour hover:text-white h-12 px-4"
             />
           )}
         </div>
