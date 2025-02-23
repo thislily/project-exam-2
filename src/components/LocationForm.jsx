@@ -1,5 +1,15 @@
 import React from "react";
 
+/**
+ * @name LocationForm
+ * @description A simple location form component.
+ * @param {Object} props - The props object.
+ * @param {Object} props.locationData - The location data object.
+ * @param {Function} props.onChange - The function to run when the location data changes.
+ * @returns {JSX.Element} The LocationForm component.
+ *
+ */
+
 const LocationForm = ({ locationData, onChange }) => {
   return (
     <div className="w-full">
@@ -48,4 +58,3 @@ const LocationForm = ({ locationData, onChange }) => {
 };
 
 export default LocationForm;
-

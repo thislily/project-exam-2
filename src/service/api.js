@@ -1,3 +1,10 @@
+/**
+ * @name api.js
+ * @description The API configuration file.
+ * @returns {string} The API URL.
+ *
+ */
+
 export const apiUrl = process.env.REACT_APP_API_URL;
 export const loginUrl = apiUrl + "/auth/login";
 export const registerUrl = apiUrl + "/auth/register";

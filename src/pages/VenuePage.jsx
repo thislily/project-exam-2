@@ -9,6 +9,13 @@ import BookingActions from "../components/BookingActions";
 import BookingModal from "../components/BookingModal";
 import UpdateVenueModal from "../components/UpdateVenueModal";
 
+/**
+ *
+ * @name VenuePage
+ * @description The venue page component.
+ * @returns {JSX.Element} The VenuePage component.
+ *
+ */
 
 const daysBetween = (start, end) => {
   const msPerDay = 1000 * 60 * 60 * 24;
@@ -55,6 +62,13 @@ function VenuePage() {
     fetchVenue();
   }, [id]);
 
+  useEffect(() => {
+  if (venue && venue.name) {
+    document.title = `${venue.name} | Holidaze`;
+  }
+}, [venue]);
+
+
   const calculateCost = (dateFrom, dateTo) => {
     const nights = daysBetween(new Date(dateFrom), new Date(dateTo));
     return nights * venue.price;
@@ -66,8 +80,16 @@ function VenuePage() {
       : null;
 
   let originalCost, newCost, costDiff;
-  if (editingBooking && selectedDates && selectedDates.start && selectedDates.end) {
-    originalCost = calculateCost(editingBooking.dateFrom, editingBooking.dateTo);
+  if (
+    editingBooking &&
+    selectedDates &&
+    selectedDates.start &&
+    selectedDates.end
+  ) {
+    originalCost = calculateCost(
+      editingBooking.dateFrom,
+      editingBooking.dateTo
+    );
     newCost = calculateCost(selectedDates.start, selectedDates.end);
     costDiff = newCost - originalCost;
   }
@@ -176,8 +198,7 @@ function VenuePage() {
   const userBookings =
     user && venue.bookings
       ? venue.bookings.filter(
-          (booking) =>
-            booking.customer && booking.customer.name === user.name
+          (booking) => booking.customer && booking.customer.name === user.name
         )
       : [];
 

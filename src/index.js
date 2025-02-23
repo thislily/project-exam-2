@@ -5,6 +5,13 @@ import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
 import "./index.css";
 import App from "./App";
 
+/**
+ * @name index
+ * @description The main application entry point.
+ * @returns {JSX.Element} The root element.
+ * 
+ */
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

@@ -2,6 +2,16 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { User, ChevronRight } from "lucide-react";
 
+/**
+ *  
+ * @name VenueManagerButton
+ * @description A button component to display the venue manager information.
+ * @param {Object} props - The props object.
+ * @param {Object} props.owner - The owner data object.
+ * @returns {JSX.Element} The VenueManagerButton component.
+ * 
+ */
+
 function VenueManagerButton({ owner }) {
   if (!owner || !owner.name) {
     return null;

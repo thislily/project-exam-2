@@ -1,6 +1,17 @@
 import React from "react";
 import ButtonMini from "./ButtonMini";
 
+/**
+ * @name ProfileCard
+ * @description A simple profile card component.
+ * @param {Object} props - The props object.
+ * @param {Object} props.profile - The profile object.
+ * @param {Function} props.onEdit - The function to run when the edit button is clicked.
+ * @param {Function} props.onUpgrade - The function to run when the upgrade button is clicked.
+ * @returns {JSX.Element} The ProfileCard component.
+ * 
+ */
+
 function ProfileCard({ profile, onEdit, onUpgrade }) {
   return (
     <div className="overflow-hidden rounded-2xl shadow-md w-[800px] max-w-full mx-auto bg-white">

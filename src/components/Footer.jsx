@@ -1,4 +1,12 @@
-import React from 'react';
+import React from "react";
+
+/**
+ *
+ * @name Footer
+ * @description The footer component.
+ * @returns {JSX.Element} The Footer component.
+ *
+ */
 
 const Footer = () => {
   return (

@@ -1,5 +1,13 @@
 import React from "react";
 
+/**
+ *
+ * @name Loader
+ * @description A simple loader component.
+ * @returns {JSX.Element} The Loader component.
+ *
+ */
+
 function Loader() {
   return (
     <div className="flex items-center justify-center pt-[100px]">

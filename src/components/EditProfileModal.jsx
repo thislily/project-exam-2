@@ -3,6 +3,19 @@ import { Dialog } from "@headlessui/react";
 import { profilesUrl, headers } from "../service/api";
 import { useAuth } from "../context/AuthContext";
 
+/**
+ * 
+ * @name EditProfileModal
+ * @description A modal for editing a user profile.
+ * @param {Object} props - The props object.
+ * @param {Boolean} props.isOpen - Whether the modal is open.
+ * @param {Function} props.onClose - The function to run when the modal closes.
+ * @param {Object} props.profile - The user profile data.
+ * @param {Function} props.onProfileUpdate - The function to run when the profile updates.
+ * @returns {JSX.Element} The EditProfileModal component.
+ * 
+ */ 
+
 const EditProfileModal = ({ isOpen, onClose, profile, onProfileUpdate }) => {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -112,7 +125,7 @@ const EditProfileModal = ({ isOpen, onClose, profile, onProfileUpdate }) => {
         <Dialog.Title className="text-xl font-semibold mb-4">
           Edit Profile for {profile.name}
         </Dialog.Title>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && <p className="text-warning mb-4">{error}</p>}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <p className="text-sm text-gray-600">Name: {profile.name}</p>

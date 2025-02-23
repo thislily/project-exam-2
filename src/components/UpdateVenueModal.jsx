@@ -92,14 +92,14 @@ const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
           <Dialog.Title className="text-xl font-semibold mb-4">
             Delete Venue
           </Dialog.Title>
-          <p className="mb-4 text-red-600">
+          <p className="mb-4 text-warning">
             Are you sure you want to delete this venue? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-2">
             <button
               type="button"
               onClick={async () => { await onDelete(); }}
-              className="px-4 py-2 bg-red-500 text-white rounded"
+              className="px-4 py-2 bg-warning text-white rounded"
             >
               Yes, Delete
             </button>
@@ -151,7 +151,7 @@ const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
                   <button
                     type="button"
                     onClick={() => handleRemoveImage(index)}
-                    className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
+                    className="absolute top-0 right-0 bg-warning0 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center"
                   >
                     X
                   </button>
@@ -244,7 +244,7 @@ const UpdateVenueModal = ({ isOpen, onClose, venue, onUpdate, onDelete }) => {
           <div className="flex justify-end gap-2">
             <button
               type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-4 py-2 bg-harbour text-white rounded"
             >
               Update Venue
             </button>

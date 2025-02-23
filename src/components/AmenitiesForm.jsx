@@ -1,5 +1,15 @@
 import React from "react";
 
+/**
+ *
+ * @name AmenitiesForm
+ * @param {Object} props - Props
+ * @param {Object} props.meta - Meta object
+ * @param {Function} props.onChange - On change handler
+ * @returns {JSX.Element} AmenitiesForm
+ * @example
+ * <AmenitiesForm meta={meta} onChange={onChange} />
+ */
 const AmenitiesForm = ({ meta, onChange }) => {
   const amenities = ["wifi", "parking", "breakfast", "pets"];
   return (
@@ -25,4 +35,3 @@ const AmenitiesForm = ({ meta, onChange }) => {
 };
 
 export default AmenitiesForm;
-

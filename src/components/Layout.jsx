@@ -1,14 +1,16 @@
-/**
- * @file Layout component
- * @name Layout
- * @returns {JSX.Element} Layout component
- */
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Header from "./Header";
+import Footer from "./Footer";
+import AuthModal from "./AuthModal";
 
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import Header from './Header';
-import Footer from './Footer';
-import AuthModal from './AuthModal';
+/**
+ *
+ * @name Layout
+ * @description The layout component.
+ * @returns {JSX.Element} The Layout component.
+ *
+ */
 
 function Layout() {
   return (

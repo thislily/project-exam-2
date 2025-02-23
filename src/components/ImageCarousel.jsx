@@ -2,12 +2,15 @@ import React, { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 /**
- * ImageCarousel
- * - Arrow key navigation in normal & lightbox mode
- * - Escape closes lightbox
- * - Fallback for no images
- * - Calls useEffect unconditionally to avoid ESLint warnings
+ *
+ * @name ImageCarousel
+ * @description A simple image carousel component.
+ * @param {Object} props - The props object.
+ * @param {Array} props.images - An array of image objects.
+ * @returns {JSX.Element} The ImageCarousel component.
+ *
  */
+
 function ImageCarousel({ images = [] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);

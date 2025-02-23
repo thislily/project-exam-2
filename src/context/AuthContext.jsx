@@ -1,5 +1,18 @@
-// AuthContext.jsx
 import React, { createContext, useContext, useState, useEffect } from "react";
+
+/**
+ * @name AuthContext
+ * @description The context for authentication state.
+ * @type {Object}
+ * @property {Boolean} isAuthModalOpen - The state of the authentication modal.
+ * @property {Function} openAuthModal - A function to open the authentication modal.
+ * @property {Function} closeAuthModal - A function to close the authentication modal.
+ * @property {Function} handleLoginSuccess - A function to run when login is successful.
+ * @property {Object} user - The user object.
+ * @property {Function} logout - A function to log the user out.
+ * @returns {JSX.Element} The AuthContext component.
+ *
+ */
 
 const AuthContext = createContext();
 
