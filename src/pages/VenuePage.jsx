@@ -243,6 +243,7 @@ function VenuePage() {
         </button>
       </div>
       <div className="flex flex-wrap justify-center md:justify-end gap-4 mb-4">
+        <h3 className="text-xl w-[300px] text-center mt-6 font-medium text-black font-heading"> My Bookings</h3>
         {venue.bookings && venue.bookings.length > 0 ? (
           venue.bookings.map((booking) => (
             <BookingBox key={booking.id} booking={booking} />

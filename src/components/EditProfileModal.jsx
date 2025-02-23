@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog } from "@headlessui/react";
 import { profilesUrl, headers } from "../service/api";
 import { useAuth } from "../context/AuthContext";
+import { X } from "lucide-react";
 
 /**
  * 
@@ -120,7 +121,7 @@ const EditProfileModal = ({ isOpen, onClose, profile, onProfileUpdate }) => {
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-black"
         >
-          X
+          <X size={24} />
         </button>
         <Dialog.Title className="text-xl font-semibold mb-4">
           Edit Profile for {profile.name}
