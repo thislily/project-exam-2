@@ -10,19 +10,29 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import VenueManagerButton from "../components/VenueManagerButton";
 import { useAuth } from "../context/AuthContext";
 
+// Helper: calculates number of nights between two dates.
+const daysBetween = (start, end) => {
+  const msPerDay = 1000 * 60 * 60 * 24;
+  return Math.round((end - start) / msPerDay);
+};
+
 function VenuePage() {
   const { id } = useParams(); // e.g., /venue/:id
   const [venue, setVenue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // State for booking modal, selected dates, guest count, and confirmation state
+  // Modal & booking state
   const [isBookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState(null);
   const [guestCount, setGuestCount] = useState(1);
+  // editingBooking is non-null when updating an existing booking.
+  const [editingBooking, setEditingBooking] = useState(null);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
+  // State for delete confirmation (for edit mode)
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const { user, openAuthModal } = useAuth();
 
-  // Fetch a single venue by ID, including owner and bookings
+  // Fetch venue data (with owner & bookings)
   useEffect(() => {
     async function fetchVenue() {
       try {
@@ -46,7 +56,25 @@ function VenuePage() {
     fetchVenue();
   }, [id]);
 
-  // Function to confirm booking via API
+  // Calculate cost given two dates and the venue price.
+  const calculateCost = (dateFrom, dateTo) => {
+    const nights = daysBetween(new Date(dateFrom), new Date(dateTo));
+    return nights * venue.price;
+  };
+
+  const newTotalCost =
+    selectedDates && selectedDates.start && selectedDates.end
+      ? calculateCost(selectedDates.start, selectedDates.end)
+      : null;
+
+  let originalCost, newCost, costDiff;
+  if (editingBooking && selectedDates && selectedDates.start && selectedDates.end) {
+    originalCost = calculateCost(editingBooking.dateFrom, editingBooking.dateTo);
+    newCost = calculateCost(selectedDates.start, selectedDates.end);
+    costDiff = newCost - originalCost;
+  }
+
+  // Updated booking submission: uses POST for new, PUT for editing.
   const handleBookingConfirm = async () => {
     try {
       const bookingData = {
@@ -55,56 +83,78 @@ function VenuePage() {
         guests: Number(guestCount),
         venueId: id,
       };
-      const res = await fetch(bookingsUrl, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(bookingData),
-      });
+      let res;
+      if (editingBooking) {
+        res = await fetch(`${bookingsUrl}/${editingBooking.id}`, {
+          method: "PUT",
+          headers: headers,
+          body: JSON.stringify(bookingData),
+        });
+      } else {
+        res = await fetch(bookingsUrl, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(bookingData),
+        });
+      }
       if (!res.ok) {
-        throw new Error("Booking creation failed");
+        const errorText = await res.text();
+        throw new Error(`Booking submission failed: ${errorText}`);
       }
       const data = await res.json();
-      console.log("Booking created:", data);
-      // Instead of an alert, show confirmation in the modal
+      console.log("Booking submission result:", data);
       setBookingConfirmed(true);
     } catch (err) {
       alert(err.message);
     }
   };
 
+  // Handle booking deletion (for edit mode)
+  const handleBookingDelete = async () => {
+    try {
+      const res = await fetch(`${bookingsUrl}/${editingBooking.id}`, {
+        method: "DELETE",
+        headers: headers,
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Booking deletion failed: ${errorText}`);
+      }
+      console.log("Booking deleted");
+      setBookingConfirmed(true);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+  // Open modal in edit mode.
+  const handleEditBooking = (booking) => {
+    setEditingBooking(booking);
+    setSelectedDates({ start: booking.dateFrom, end: booking.dateTo });
+    setGuestCount(booking.guests);
+    setBookingModalOpen(true);
+    setBookingConfirmed(false);
+    setConfirmDelete(false);
+  };
+
   if (loading) {
     return <p className="text-center mt-4">Loading venue...</p>;
   }
-
   if (error) {
     return <p className="text-center mt-4 text-red-500">{error}</p>;
   }
-
   if (!venue) {
     return <p className="text-center mt-4">No venue data found</p>;
   }
 
-  // Destructure data from venue
-  const {
-    name,
-    description,
-    price,
-    maxGuests,
-    rating,
-    media,
-    location,
-    meta,
-    bookings,
-  } = venue;
-
-  // Build amenities list from meta
+  const { name: venueName, description, price, maxGuests, rating, media, location, meta, bookings } = venue;
   const amenities = [];
   if (meta?.wifi) amenities.push("Free Wi-Fi");
   if (meta?.parking) amenities.push("Parking");
   if (meta?.breakfast) amenities.push("Breakfast included");
   if (meta?.pets) amenities.push("Pets allowed");
 
-  // Check if the logged-in user has a booking at this venue by comparing customer names
+  // Determine if the logged-in user has a booking at this venue by comparing customer names.
   const userBookings =
     user && bookings
       ? bookings.filter(
@@ -115,10 +165,10 @@ function VenuePage() {
 
   return (
     <div className="container font-body bg-gray-100 text-black pt-4">
-      <Breadcrumbs overrideLast={name} />
+      <Breadcrumbs overrideLast={venueName} />
       <header className="text-start pb-4 mx-auto max-w-[1000px] px-2">
         <h1 className="text-3xl font-semibold text-start text-black">
-          {name}
+          {venueName}
           {location &&
             (location.city && location.country
               ? ` in ${location.city}, ${location.country}`
@@ -135,25 +185,29 @@ function VenuePage() {
           {/* Left Column */}
           <div className="flex-1">
             <h1 className="text-2xl font-medium text-black max-sm:text-xl">
-              {name}
+              {venueName}
             </h1>
             {user && userBookings.length > 0 && (
-              <div className="my-2 font-semibold text-warning">
-                You are booked for these days:{" "}
-                {userBookings
-                  .map(
-                    (booking) =>
-                      `${new Date(booking.dateFrom).toLocaleDateString()} - ${new Date(
-                        booking.dateTo
-                      ).toLocaleDateString()}`
-                  )
-                  .join(", ")}
+              <div className="my-2">
+                <p className="font-semibold text-warning mb-2">Your Bookings:</p>
+                {userBookings.map((booking) => (
+                  <div key={booking.id} className="flex items-center justify-between border p-2 mb-1">
+                    <span>
+                      {new Date(booking.dateFrom).toLocaleDateString()} -{" "}
+                      {new Date(booking.dateTo).toLocaleDateString()}
+                    </span>
+                    <button
+                      onClick={() => handleEditBooking(booking)}
+                      className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
+                    >
+                      Edit Booking
+                    </button>
+                  </div>
+                ))}
               </div>
             )}
             <StarRating rating={rating} />
-            <p className="mt-5 text-base leading-7 text-black">
-              {description}
-            </p>
+            <p className="mt-5 text-base leading-7 text-black">{description}</p>
             <p className="mt-6 text-base font-medium text-black">
               Price: ${price} per night
             </p>
@@ -186,7 +240,6 @@ function VenuePage() {
               )}
             </div>
           </div>
-
           {/* Right Column */}
           <div className="w-[400px] max-md:w-full mx-auto flex flex-col justify-center gap-5">
             <VenueManagerButton owner={venue.owner} />
@@ -197,6 +250,7 @@ function VenuePage() {
               venueId={id}
               bookings={bookings}
               onDateChange={(dates) => setSelectedDates(dates)}
+              selectedDates={selectedDates}
             />
             <Button
               venueId={id}
@@ -206,8 +260,12 @@ function VenuePage() {
                 if (!user) {
                   openAuthModal();
                 } else {
+                  if (!editingBooking) {
+                    setGuestCount(1);
+                  }
                   setBookingModalOpen(true);
                   setBookingConfirmed(false);
+                  setConfirmDelete(false);
                 }
               }}
             />
@@ -230,7 +288,16 @@ function VenuePage() {
           </button>
           {bookingConfirmed ? (
             <div>
-              <p className="mb-4">Booking confirmed!</p>
+              <p className="mb-4">
+                {editingBooking ? "Booking updated!" : "Booking confirmed!"}
+              </p>
+              {editingBooking && (
+                <p className="mb-4">
+                  Original Cost: ${originalCost} | New Cost: ${newCost} (
+                  {costDiff >= 0 ? "+" : ""}
+                  {costDiff})
+                </p>
+              )}
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => window.location.reload()}
@@ -240,35 +307,20 @@ function VenuePage() {
                 </button>
               </div>
             </div>
-          ) : selectedDates && selectedDates.start && selectedDates.end ? (
+          ) : confirmDelete ? (
             <div>
-              <p className="mb-4">
-                Do you wish to confirm{" "}
-                {new Date(selectedDates.start).toLocaleDateString()} -{" "}
-                {new Date(selectedDates.end).toLocaleDateString()} at {name}?
+              <p className="mb-4 text-red-600">
+                Are you sure you want to delete this booking?
               </p>
-              <div className="mb-4">
-                <label htmlFor="guestCount" className="block mb-2">
-                  Number of Guests:
-                </label>
-                <input
-                  id="guestCount"
-                  type="number"
-                  min="1"
-                  value={guestCount}
-                  onChange={(e) => setGuestCount(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
               <div className="flex justify-end gap-2">
                 <button
-                  onClick={handleBookingConfirm}
-                  className="px-4 py-2 bg-breeze text-black rounded"
+                  onClick={handleBookingDelete}
+                  className="px-4 py-2 bg-red-500 text-white rounded"
                 >
-                  Confirm
+                  Yes, Delete
                 </button>
                 <button
-                  onClick={() => setBookingModalOpen(false)}
+                  onClick={() => setConfirmDelete(false)}
                   className="px-4 py-2 bg-gray-300 text-black rounded"
                 >
                   Cancel
@@ -277,19 +329,65 @@ function VenuePage() {
             </div>
           ) : (
             <div>
-              <p className="mb-4">Please select your dates:</p>
+              <h3 className="mb-4 text-xl font-semibold">
+                {editingBooking ? "Edit your booking" : "Confirm your booking"}
+              </h3>
+              {/* Always show the Calendar */}
               <Calendar
                 venueId={id}
                 bookings={bookings}
                 onDateChange={(dates) => setSelectedDates(dates)}
+                selectedDates={selectedDates}
               />
-              <div className="flex justify-end mt-4">
+              <div className="mb-4">
+                <label htmlFor="guestCount" className="block mb-2">
+                  Number of Guests:
+                </label>
+                <input
+                  id="guestCount"
+                  type="number"
+                  min="1"
+                  max={maxGuests}
+                  value={guestCount}
+                  onChange={(e) => setGuestCount(e.target.value)}
+                  className="w-full p-2 border rounded"
+                />
+              </div>
+              {selectedDates && selectedDates.start && selectedDates.end && (
+                <>
+                  {!editingBooking && newTotalCost !== null && (
+                    <p className="mb-4">Total Cost: ${newTotalCost}</p>
+                  )}
+                  {editingBooking && (
+                    <p className="mb-4">
+                      Original Cost: ${originalCost} | New Cost: ${newCost} (
+                      {costDiff >= 0 ? "+" : ""}
+                      {costDiff})
+                    </p>
+                  )}
+                </>
+              )}
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={handleBookingConfirm}
+                  className="px-4 py-2 bg-breeze text-black rounded"
+                >
+                  {editingBooking ? "Update Booking" : "Confirm Booking"}
+                </button>
                 <button
                   onClick={() => setBookingModalOpen(false)}
                   className="px-4 py-2 bg-gray-300 text-black rounded"
                 >
-                  Close
+                  Cancel
                 </button>
+                {editingBooking && (
+                  <button
+                    onClick={() => setConfirmDelete(true)}
+                    className="px-4 py-2 bg-red-300 text-black rounded"
+                  >
+                    Delete Booking
+                  </button>
+                )}
               </div>
             </div>
           )}
