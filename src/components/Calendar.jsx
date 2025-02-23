@@ -3,13 +3,20 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../custom-calendar.css"; 
 
-
-function Calendar({ bookings = [], onDateChange }) {
+function Calendar({ bookings = [], onDateChange, selectedDates }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [bookedDates, setBookedDates] = useState([]);
 
-  // Convert bookings (with dateFrom/dateTo) into an array of Date objects to exclude
+  // Update local state when selectedDates prop changes.
+  useEffect(() => {
+    if (selectedDates) {
+      setStartDate(selectedDates.start ? new Date(selectedDates.start) : null);
+      setEndDate(selectedDates.end ? new Date(selectedDates.end) : null);
+    }
+  }, [selectedDates]);
+
+  // Convert bookings into an array of Date objects to exclude.
   useEffect(() => {
     const allBooked = [];
 
@@ -17,8 +24,6 @@ function Calendar({ bookings = [], onDateChange }) {
       if (booking.dateFrom && booking.dateTo) {
         const start = new Date(booking.dateFrom);
         const end = new Date(booking.dateTo);
-
-        // Generate all dates in the range
         const current = new Date(start);
         while (current <= end) {
           allBooked.push(new Date(current));
@@ -30,13 +35,12 @@ function Calendar({ bookings = [], onDateChange }) {
     setBookedDates(allBooked);
   }, [bookings]);
 
-  // Handle user selecting a date range
+  // Handle user selecting a date range.
   const handleChange = (dates) => {
     const [start, end] = dates;
     setStartDate(start);
     setEndDate(end);
 
-    // Bubble up the date range if needed
     if (onDateChange) {
       onDateChange({ start, end });
     }
@@ -54,14 +58,11 @@ function Calendar({ bookings = [], onDateChange }) {
         minDate={new Date()}
         excludeDates={bookedDates}
         className="text-black rounded p-2"
-        calendarClassName="custom-calendar" // <-- custom class for the calendar
+        calendarClassName="custom-calendar"
       />
-
-      {/* If both dates selected, show a summary below */}
       {startDate && endDate && (
         <p className="mt-2 text-black">
-          You selected: {startDate.toLocaleDateString()} –{" "}
-          {endDate.toLocaleDateString()}
+          You selected: {startDate.toLocaleDateString()} – {endDate.toLocaleDateString()}
         </p>
       )}
     </div>
