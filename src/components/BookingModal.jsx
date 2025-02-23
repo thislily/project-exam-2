@@ -5,20 +5,24 @@ import Calendar from "./Calendar";
 const BookingModal = ({
   isOpen,
   onClose,
+  id,
+  bookings,
   selectedDates,
+  onDateChange,
   guestCount,
-  maxGuests,
+  setGuestCount,
+  onConfirm,
+  onDelete,
   editingBooking,
   bookingConfirmed,
   confirmDelete,
-  onDateChange,
-  onGuestChange,
-  onConfirm,
-  onDelete,
+  onCancelDelete, // Callback to cancel delete confirmation.
+  onRequestDelete, // Callback triggered when user clicks "Delete Booking".
+  newTotalCost,
+  originalCost,
+  newCost,
+  costDiff,
 }) => {
-  // Compute cost values here if needed (or pass them in as props)
-  // For simplicity, assume props newTotalCost, originalCost, newCost, costDiff are passed if needed
-
   return (
     <Dialog
       open={isOpen}
@@ -39,7 +43,9 @@ const BookingModal = ({
             </p>
             {editingBooking && (
               <p className="mb-4">
-                {/* Cost information could be shown here */}
+                Original Cost: ${originalCost} | New Cost: ${newCost} (
+                {costDiff >= 0 ? "+" : ""}
+                {costDiff})
               </p>
             )}
             <div className="flex justify-end gap-2">
@@ -64,7 +70,7 @@ const BookingModal = ({
                 Yes, Delete
               </button>
               <button
-                onClick={() => {} /* Reset confirmDelete in parent */}
+                onClick={onCancelDelete}
                 className="px-4 py-2 bg-gray-300 text-black rounded"
               >
                 Cancel
@@ -76,8 +82,9 @@ const BookingModal = ({
             <h3 className="mb-4 text-xl font-semibold">
               {editingBooking ? "Edit your booking" : "Confirm your booking"}
             </h3>
-            {/* Always show the Calendar */}
             <Calendar
+              venueId={id}
+              bookings={bookings}
               onDateChange={onDateChange}
               selectedDates={selectedDates}
             />
@@ -89,13 +96,26 @@ const BookingModal = ({
                 id="guestCount"
                 type="number"
                 min="1"
-                max={maxGuests}
+                max="100"
                 value={guestCount}
-                onChange={(e) => onGuestChange(e.target.value)}
+                onChange={(e) => setGuestCount(e.target.value)}
                 className="w-full p-2 border rounded"
               />
             </div>
-            {/* Optionally display cost info */}
+            {selectedDates && selectedDates.start && selectedDates.end && (
+              <>
+                {!editingBooking && newTotalCost !== null && (
+                  <p className="mb-4">Total Cost: ${newTotalCost}</p>
+                )}
+                {editingBooking && (
+                  <p className="mb-4">
+                    Original Cost: ${originalCost} | New Cost: ${newCost} (
+                    {costDiff >= 0 ? "+" : ""}
+                    {costDiff})
+                  </p>
+                )}
+              </>
+            )}
             <div className="flex justify-end gap-2">
               <button
                 onClick={onConfirm}
@@ -109,6 +129,14 @@ const BookingModal = ({
               >
                 Cancel
               </button>
+              {editingBooking && (
+                <button
+                  onClick={onRequestDelete}
+                  className="px-4 py-2 bg-red-300 text-black rounded"
+                >
+                  Delete Booking
+                </button>
+              )}
             </div>
           </div>
         )}

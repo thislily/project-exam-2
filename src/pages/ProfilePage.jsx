@@ -6,6 +6,7 @@ import BookingCard from "../components/BookingCard";
 import { profilesUrl, headers } from "../service/api";
 import Loader from "../components/Loader";
 import Breadcrumbs from "../components/Breadcrumbs";
+import EditProfileModal from "../components/EditProfileModal";
 
 function ProfilePage() {
   const { name } = useParams(); // e.g., /profile/:name
@@ -14,6 +15,7 @@ function ProfilePage() {
   const [loading, setLoading] = useState(true);
   // activeTab can be "venues", "upcoming", or "previous"
   const [activeTab, setActiveTab] = useState("venues");
+  const [isEditModalOpen, setEditModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -40,27 +42,53 @@ function ProfilePage() {
     }
   }, [name]);
 
+  // Handler to upgrade the profile to manager.
+  const handleUpgrade = async () => {
+    try {
+      const res = await fetch(`${profilesUrl}/${name}`, {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify({ venueManager: true }),
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(`Failed to upgrade: ${errorText}`);
+      }
+      const data = await res.json();
+      setProfile(data.data);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
   if (loading) return <Loader />;
-  if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
+  if (error)
+    return <div className="p-4 text-red-500">Error: {error}</div>;
   if (!profile)
     return <div className="p-4 text-red-500">No profile data found.</div>;
 
+  // Ensure bookings is an array.
+  const bookings = profile.bookings || [];
   // Split bookings into upcoming and previous.
   const currentDate = new Date();
-  const upcomingBookings = profile.bookings.filter(
+  const upcomingBookings = bookings.filter(
     (booking) => new Date(booking.dateFrom) >= currentDate
   );
-  const previousBookings = profile.bookings.filter(
+  const previousBookings = bookings.filter(
     (booking) => new Date(booking.dateFrom) < currentDate
   );
 
   return (
     <div className="container mx-auto p-4">
       <Breadcrumbs />
-      <ProfileCard profile={profile} />
+      <ProfileCard
+        profile={profile}
+        onEdit={() => setEditModalOpen(true)}
+        onUpgrade={handleUpgrade}
+      />
       <div className="mt-8">
         {/* Tab Navigation */}
-        <div className="flex gap-4 border-b  mb-4 w-[800px] max-w-full mx-auto">
+        <div className="flex gap-4 border-b mb-4 w-[800px] max-w-full mx-auto">
           <button
             onClick={() => setActiveTab("venues")}
             className={`py-2 px-4 ${
@@ -102,7 +130,9 @@ function ProfilePage() {
               ))}
             </div>
           ) : (
-            <p className="w-[800px] max-w-full mx-auto">No listed venues found.</p>
+            <p className="w-[800px] max-w-full mx-auto">
+              No listed venues found.
+            </p>
           )
         ) : activeTab === "upcoming" ? (
           upcomingBookings && upcomingBookings.length > 0 ? (
@@ -130,6 +160,12 @@ function ProfilePage() {
           )
         ) : null}
       </div>
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        profile={profile}
+        onProfileUpdate={(updatedProfile) => setProfile(updatedProfile)}
+      />
     </div>
   );
 }

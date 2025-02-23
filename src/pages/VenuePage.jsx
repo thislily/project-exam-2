@@ -1,38 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { Dialog } from "@headlessui/react";
+import { useParams, useNavigate } from "react-router-dom";
 import ImageCarousel from "../components/ImageCarousel";
-import Calendar from "../components/Calendar";
-import Button from "../components/Button";
-import { venuesUrl, bookingsUrl, headers } from "../service/api";
-import StarRating from "../components/StarRating";
 import Breadcrumbs from "../components/Breadcrumbs";
-import VenueManagerButton from "../components/VenueManagerButton";
+import { venuesUrl, bookingsUrl, headers } from "../service/api";
 import { useAuth } from "../context/AuthContext";
+import VenueDetails from "../components/VenueDetails";
+import BookingActions from "../components/BookingActions";
+import BookingModal from "../components/BookingModal";
+import UpdateVenueModal from "../components/UpdateVenueModal";
 
-// Helper: calculates number of nights between two dates.
+
 const daysBetween = (start, end) => {
   const msPerDay = 1000 * 60 * 60 * 24;
   return Math.round((end - start) / msPerDay);
 };
 
 function VenuePage() {
-  const { id } = useParams(); // e.g., /venue/:id
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user, openAuthModal } = useAuth();
+
   const [venue, setVenue] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // Modal & booking state
+
+  // Booking modal state.
   const [isBookingModalOpen, setBookingModalOpen] = useState(false);
   const [selectedDates, setSelectedDates] = useState(null);
   const [guestCount, setGuestCount] = useState(1);
-  // editingBooking is non-null when updating an existing booking.
   const [editingBooking, setEditingBooking] = useState(null);
   const [bookingConfirmed, setBookingConfirmed] = useState(false);
-  // State for delete confirmation (for edit mode)
   const [confirmDelete, setConfirmDelete] = useState(false);
-  const { user, openAuthModal } = useAuth();
 
-  // Fetch venue data (with owner & bookings)
+  // Update venue modal state.
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+
   useEffect(() => {
     async function fetchVenue() {
       try {
@@ -41,11 +43,8 @@ function VenuePage() {
           `${venuesUrl}/${id}?_owner=true&_bookings=true`,
           { headers }
         );
-        if (!response.ok) {
-          throw new Error("Failed to fetch venue");
-        }
+        if (!response.ok) throw new Error("Failed to fetch venue");
         const json = await response.json();
-        console.log("Fetched Venue Data:", json);
         setVenue(json.data);
       } catch (err) {
         setError(err.message);
@@ -56,7 +55,6 @@ function VenuePage() {
     fetchVenue();
   }, [id]);
 
-  // Calculate cost given two dates and the venue price.
   const calculateCost = (dateFrom, dateTo) => {
     const nights = daysBetween(new Date(dateFrom), new Date(dateTo));
     return nights * venue.price;
@@ -74,7 +72,6 @@ function VenuePage() {
     costDiff = newCost - originalCost;
   }
 
-  // Updated booking submission: uses POST for new, PUT for editing.
   const handleBookingConfirm = async () => {
     try {
       const bookingData = {
@@ -87,13 +84,13 @@ function VenuePage() {
       if (editingBooking) {
         res = await fetch(`${bookingsUrl}/${editingBooking.id}`, {
           method: "PUT",
-          headers: headers,
+          headers,
           body: JSON.stringify(bookingData),
         });
       } else {
         res = await fetch(bookingsUrl, {
           method: "POST",
-          headers: headers,
+          headers,
           body: JSON.stringify(bookingData),
         });
       }
@@ -101,33 +98,32 @@ function VenuePage() {
         const errorText = await res.text();
         throw new Error(`Booking submission failed: ${errorText}`);
       }
-      const data = await res.json();
-      console.log("Booking submission result:", data);
       setBookingConfirmed(true);
     } catch (err) {
       alert(err.message);
     }
   };
 
-  // Handle booking deletion (for edit mode)
   const handleBookingDelete = async () => {
     try {
       const res = await fetch(`${bookingsUrl}/${editingBooking.id}`, {
         method: "DELETE",
-        headers: headers,
+        headers,
       });
-      if (!res.ok) {
+      if (res.status !== 204) {
         const errorText = await res.text();
         throw new Error(`Booking deletion failed: ${errorText}`);
       }
-      console.log("Booking deleted");
+      setVenue((prev) => ({
+        ...prev,
+        bookings: prev.bookings.filter((b) => b.id !== editingBooking.id),
+      }));
       setBookingConfirmed(true);
     } catch (err) {
       alert(err.message);
     }
   };
 
-  // Open modal in edit mode.
   const handleEditBooking = (booking) => {
     setEditingBooking(booking);
     setSelectedDates({ start: booking.dateFrom, end: booking.dateTo });
@@ -137,262 +133,143 @@ function VenuePage() {
     setConfirmDelete(false);
   };
 
-  if (loading) {
-    return <p className="text-center mt-4">Loading venue...</p>;
-  }
-  if (error) {
-    return <p className="text-center mt-4 text-red-500">{error}</p>;
-  }
-  if (!venue) {
-    return <p className="text-center mt-4">No venue data found</p>;
-  }
+  // Update Venue Handlers
+  const handleUpdateVenue = async (updatedData) => {
+    try {
+      const res = await fetch(`${venuesUrl}/${id}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(updatedData),
+      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Failed to update venue");
+      }
+      const data = await res.json();
+      setVenue(data.data);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
-  const { name: venueName, description, price, maxGuests, rating, media, location, meta, bookings } = venue;
-  const amenities = [];
-  if (meta?.wifi) amenities.push("Free Wi-Fi");
-  if (meta?.parking) amenities.push("Parking");
-  if (meta?.breakfast) amenities.push("Breakfast included");
-  if (meta?.pets) amenities.push("Pets allowed");
+  const handleDeleteVenue = async () => {
+    try {
+      const res = await fetch(`${venuesUrl}/${id}`, {
+        method: "DELETE",
+        headers,
+      });
+      if (res.status !== 204) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Failed to delete venue");
+      }
+      // Redirect to the user's profile page after deletion.
+      navigate(`/profile/${user.name}`);
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
-  // Determine if the logged-in user has a booking at this venue by comparing customer names.
+  if (loading) return <p className="text-center mt-4">Loading venue...</p>;
+  if (error) return <p className="text-center mt-4 text-red-500">{error}</p>;
+  if (!venue) return <p className="text-center mt-4">No venue data found</p>;
+
   const userBookings =
-    user && bookings
-      ? bookings.filter(
+    user && venue.bookings
+      ? venue.bookings.filter(
           (booking) =>
             booking.customer && booking.customer.name === user.name
         )
       : [];
 
+  const isOwner = venue.owner && user && venue.owner.name === user.name;
+
   return (
-    <div className="container font-body bg-gray-100 text-black pt-4">
-      <Breadcrumbs overrideLast={venueName} />
-      <header className="text-start pb-4 mx-auto max-w-[1000px] px-2">
-        <h1 className="text-3xl font-semibold text-start text-black">
-          {venueName}
-          {location &&
-            (location.city && location.country
-              ? ` in ${location.city}, ${location.country}`
-              : location.city
-              ? ` in ${location.city}`
-              : location.country
-              ? ` in ${location.country}`
+    <div className="container mx-auto p-6">
+      <Breadcrumbs overrideLast={venue.name} />
+      <header className="text-center pb-4 mx-auto max-w-[1000px] px-2">
+        <h1 className="text-3xl font-semibold text-black">
+          {venue.name}
+          {venue.location &&
+            (venue.location.city && venue.location.country
+              ? ` in ${venue.location.city}, ${venue.location.country}`
+              : venue.location.city
+              ? ` in ${venue.location.city}`
+              : venue.location.country
+              ? ` in ${venue.location.country}`
               : "")}
         </h1>
       </header>
       <div className="mx-auto my-0 bg-white rounded-2xl max-w-[1000px] shadow-md">
-        <ImageCarousel images={media} />
+        <ImageCarousel images={venue.media} />
         <div className="flex gap-10 px-12 py-10 bg-white rounded-b-xl max-md:flex-col max-md:p-5 max-sm:p-4">
-          {/* Left Column */}
-          <div className="flex-1">
-            <h1 className="text-2xl font-medium text-black max-sm:text-xl">
-              {venueName}
-            </h1>
-            {user && userBookings.length > 0 && (
-              <div className="my-2">
-                <p className="font-semibold text-warning mb-2">Your Bookings:</p>
-                {userBookings.map((booking) => (
-                  <div key={booking.id} className="flex items-center justify-between border p-2 mb-1">
-                    <span>
-                      {new Date(booking.dateFrom).toLocaleDateString()} -{" "}
-                      {new Date(booking.dateTo).toLocaleDateString()}
-                    </span>
-                    <button
-                      onClick={() => handleEditBooking(booking)}
-                      className="px-2 py-1 text-sm bg-blue-500 text-white rounded"
-                    >
-                      Edit Booking
-                    </button>
-                  </div>
-                ))}
+          <VenueDetails
+            venue={venue}
+            userBookings={userBookings}
+            onEditBooking={handleEditBooking}
+          />
+          <div className="w-[400px] max-md:w-full mx-auto flex flex-col">
+            {isOwner ? (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => setUpdateModalOpen(true)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Manage Venue
+                </button>
               </div>
-            )}
-            <StarRating rating={rating} />
-            <p className="mt-5 text-base leading-7 text-black">{description}</p>
-            <p className="mt-6 text-base font-medium text-black">
-              Price: ${price} per night
-            </p>
-            <p className="mt-6 text-base text-black">Max Guests: {maxGuests}</p>
-            <div className="mt-6 text-base text-black">
-              <h2 className="font-semibold">Amenities</h2>
-              {amenities.length ? (
-                <ul className="list-disc list-inside">
-                  {amenities.map((a) => (
-                    <li key={a}>{a}</li>
-                  ))}
-                </ul>
-              ) : (
-                <ul className="list-disc list-inside">
-                  <li>None.</li>
-                </ul>
-              )}
-            </div>
-            <div className="mt-9 text-base text-black">
-              <h2 className="font-semibold">Location</h2>
-              {location &&
-              (location.address || location.city || location.country) ? (
-                <>
-                  {location.address && <p>{location.address}</p>}
-                  {location.city && <p>{location.city}</p>}
-                  {location.country && <p>{location.country}</p>}
-                </>
-              ) : (
-                <p>No location provided</p>
-              )}
-            </div>
-          </div>
-          {/* Right Column */}
-          <div className="w-[400px] max-md:w-full mx-auto flex flex-col justify-center gap-5">
-            <VenueManagerButton owner={venue.owner} />
-            <h2 className="text-xl font-medium text-center text-black">
-              Availability
-            </h2>
-            <Calendar
-              venueId={id}
-              bookings={bookings}
-              onDateChange={(dates) => setSelectedDates(dates)}
-              selectedDates={selectedDates}
-            />
-            <Button
-              venueId={id}
-              className={"max-w-fit mx-auto"}
-              text={"Book Now"}
-              onClick={() => {
-                if (!user) {
-                  openAuthModal();
-                } else {
-                  if (!editingBooking) {
-                    setGuestCount(1);
+            ) : (
+              <BookingActions
+                id={id}
+                bookings={venue.bookings}
+                selectedDates={selectedDates}
+                onDateChange={setSelectedDates}
+                onBookNow={() => {
+                  if (!user) {
+                    openAuthModal("Login to book this venue");
+                  } else {
+                    if (!editingBooking) setGuestCount(1);
+                    setBookingModalOpen(true);
+                    setBookingConfirmed(false);
+                    setConfirmDelete(false);
                   }
-                  setBookingModalOpen(true);
-                  setBookingConfirmed(false);
-                  setConfirmDelete(false);
-                }
-              }}
-            />
+                }}
+              />
+            )}
           </div>
         </div>
       </div>
 
-      {/* Booking Modal */}
-      <Dialog
-        open={isBookingModalOpen}
+      <BookingModal
+        isOpen={isBookingModalOpen}
         onClose={() => setBookingModalOpen(false)}
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      >
-        <Dialog.Panel className="bg-white p-6 rounded-lg max-w-md w-full relative">
-          <button
-            onClick={() => setBookingModalOpen(false)}
-            className="absolute top-2 right-2 text-gray-500 hover:text-black"
-          >
-            X
-          </button>
-          {bookingConfirmed ? (
-            <div>
-              <p className="mb-4">
-                {editingBooking ? "Booking updated!" : "Booking confirmed!"}
-              </p>
-              {editingBooking && (
-                <p className="mb-4">
-                  Original Cost: ${originalCost} | New Cost: ${newCost} (
-                  {costDiff >= 0 ? "+" : ""}
-                  {costDiff})
-                </p>
-              )}
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => window.location.reload()}
-                  className="px-4 py-2 bg-breeze text-black rounded"
-                >
-                  Okay
-                </button>
-              </div>
-            </div>
-          ) : confirmDelete ? (
-            <div>
-              <p className="mb-4 text-red-600">
-                Are you sure you want to delete this booking?
-              </p>
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={handleBookingDelete}
-                  className="px-4 py-2 bg-red-500 text-white rounded"
-                >
-                  Yes, Delete
-                </button>
-                <button
-                  onClick={() => setConfirmDelete(false)}
-                  className="px-4 py-2 bg-gray-300 text-black rounded"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <h3 className="mb-4 text-xl font-semibold">
-                {editingBooking ? "Edit your booking" : "Confirm your booking"}
-              </h3>
-              {/* Always show the Calendar */}
-              <Calendar
-                venueId={id}
-                bookings={bookings}
-                onDateChange={(dates) => setSelectedDates(dates)}
-                selectedDates={selectedDates}
-              />
-              <div className="mb-4">
-                <label htmlFor="guestCount" className="block mb-2">
-                  Number of Guests:
-                </label>
-                <input
-                  id="guestCount"
-                  type="number"
-                  min="1"
-                  max={maxGuests}
-                  value={guestCount}
-                  onChange={(e) => setGuestCount(e.target.value)}
-                  className="w-full p-2 border rounded"
-                />
-              </div>
-              {selectedDates && selectedDates.start && selectedDates.end && (
-                <>
-                  {!editingBooking && newTotalCost !== null && (
-                    <p className="mb-4">Total Cost: ${newTotalCost}</p>
-                  )}
-                  {editingBooking && (
-                    <p className="mb-4">
-                      Original Cost: ${originalCost} | New Cost: ${newCost} (
-                      {costDiff >= 0 ? "+" : ""}
-                      {costDiff})
-                    </p>
-                  )}
-                </>
-              )}
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={handleBookingConfirm}
-                  className="px-4 py-2 bg-breeze text-black rounded"
-                >
-                  {editingBooking ? "Update Booking" : "Confirm Booking"}
-                </button>
-                <button
-                  onClick={() => setBookingModalOpen(false)}
-                  className="px-4 py-2 bg-gray-300 text-black rounded"
-                >
-                  Cancel
-                </button>
-                {editingBooking && (
-                  <button
-                    onClick={() => setConfirmDelete(true)}
-                    className="px-4 py-2 bg-red-300 text-black rounded"
-                  >
-                    Delete Booking
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-        </Dialog.Panel>
-      </Dialog>
+        id={id}
+        bookings={venue.bookings}
+        selectedDates={selectedDates}
+        onDateChange={setSelectedDates}
+        guestCount={guestCount}
+        setGuestCount={setGuestCount}
+        onConfirm={handleBookingConfirm}
+        onDelete={handleBookingDelete}
+        editingBooking={editingBooking}
+        bookingConfirmed={bookingConfirmed}
+        confirmDelete={confirmDelete}
+        onCancelDelete={() => setConfirmDelete(false)}
+        onRequestDelete={() => setConfirmDelete(true)}
+        newTotalCost={newTotalCost}
+        originalCost={originalCost}
+        newCost={newCost}
+        costDiff={costDiff}
+      />
+
+      {isOwner && (
+        <UpdateVenueModal
+          isOpen={isUpdateModalOpen}
+          onClose={() => setUpdateModalOpen(false)}
+          venue={venue}
+          onUpdate={handleUpdateVenue}
+          onDelete={handleDeleteVenue}
+        />
+      )}
     </div>
   );
 }
