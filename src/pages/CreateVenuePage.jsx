@@ -7,6 +7,13 @@ import { venuesUrl, headers } from "../service/api";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
+/**
+ * @name CreateVenuePage
+ * @description A page to create a new venue.
+ * @returns {JSX.Element} The CreateVenuePage component.
+ * 
+ */
+
 function CreateVenuePage() {
   const { user, openAuthModal } = useAuth();
   const navigate = useNavigate();
@@ -16,6 +23,11 @@ function CreateVenuePage() {
       openAuthModal("Login to create a venue");
     }
   }, [user, openAuthModal]);
+
+  useEffect(() => {
+    document.title = "Create Venue | Holidaze";
+  }, []);
+  
 
   const [venueData, setVenueData] = useState({
     name: "",
@@ -273,7 +285,7 @@ function CreateVenuePage() {
 
           <button
             type="submit"
-            className="p-3 mt-6 bg-amber-300 rounded-md text-xl font-semibold"
+            className="p-3 mt-6 bg-white hover:bg-sunbeam border-sunbeam border-4 rounded-md text-xl font-semibold"
           >
             {loading ? "Creating..." : "Create Venue"}
           </button>

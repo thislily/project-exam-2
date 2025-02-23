@@ -1,5 +1,21 @@
 import React from "react";
 
+/**
+ *
+ * @name ImageGallery
+ * @description A simple image gallery component.
+ * @param {Object} props - The props object.
+ * @param {Array} props.media - An array of image objects.
+ * @param {String} props.newImageUrl - The URL of the new image.
+ * @param {String} props.newImageAlt - The alt text of the new image.
+ * @param {Function} props.onNewImageUrlChange - The function to run when the new image URL changes.
+ * @param {Function} props.onNewImageAltChange - The function to run when the new image alt text changes.
+ * @param {Function} props.onAddImage - The function to run when adding a new image.
+ * @param {Function} props.onRemoveImage - The function to run when removing an image.
+ * @returns {JSX.Element} The ImageGallery component.
+ *
+ */
+
 const ImageGallery = ({
   media,
   newImageUrl,

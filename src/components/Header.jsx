@@ -2,7 +2,15 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import ButtonMini from "./ButtonMini";
 import Logo from "../assets/LogoWhite.svg";
-import { useAuth } from "../context/AuthContext"; // Import the global auth hook
+import { useAuth } from "../context/AuthContext";
+
+/**
+ *
+ * @name Header
+ * @description The header component.
+ * @returns {JSX.Element} The Header component.
+ *
+ */
 
 function Header() {
   const { openAuthModal, user, logout } = useAuth();
@@ -75,7 +83,11 @@ function Header() {
             </div>
           ) : (
             // When not logged in, show the Log in button
-            <ButtonMini text="Log in" onClick={openAuthModal} className="border-breeze hover:bg-breeze text-black" />
+            <ButtonMini
+              text="Log in"
+              onClick={openAuthModal}
+              className="border-breeze hover:bg-breeze text-black"
+            />
           )}
         </nav>
       </header>

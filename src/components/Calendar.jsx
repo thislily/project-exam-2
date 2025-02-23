@@ -3,6 +3,18 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "../custom-calendar.css"; 
 
+/**
+ *  
+ * @name Calendar
+ * @description A calendar component.
+ * @param {Object} props - The props object.
+ * @param {Array} props.bookings - The array of bookings to exclude.
+ * @param {Function} props.onDateChange - The function to run when the date range changes.
+ * @param {Object} props.selectedDates - The currently selected date range.
+ * @returns {JSX.Element} The Calendar component.
+ * 
+ */
+
 function Calendar({ bookings = [], onDateChange, selectedDates }) {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);

@@ -5,6 +5,17 @@ import { Link } from "react-router-dom";
 import { registerUrl, loginUrl, headers } from "../service/api";
 import { useAuth } from "../context/AuthContext";
 
+/**
+ *
+ * @name AuthModal
+ * @returns {JSX.Element} AuthModal
+ * @example
+ * <AuthModal />
+ * @see AuthContext
+ * @see AuthProvider
+ * @see useAuth
+ */
+
 // Default values for registration
 const DEFAULT_AVATAR = {
   url: "https://static.vecteezy.com/system/resources/thumbnails/009/734/564/small_2x/default-avatar-profile-icon-of-social-media-user-vector.jpg",
@@ -16,9 +27,9 @@ const DEFAULT_BANNER = {
   alt: "Default banner",
 };
 
+// AuthModal component
 function AuthModal() {
   const { isAuthModalOpen, closeAuthModal, handleLoginSuccess } = useAuth();
-  // Our formData holds extra keys that won't be shown in the UI
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -33,7 +44,6 @@ function AuthModal() {
   const [loading, setLoading] = useState(false);
   // Holds the new user's name to display the welcome reminder
   const [newUserName, setNewUserName] = useState("");
-  
 
   // Automatically clear the welcome new user reminder after 30 seconds
   useEffect(() => {
@@ -44,7 +54,6 @@ function AuthModal() {
       return () => clearTimeout(timer);
     }
   }, [newUserName]);
-
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -92,8 +101,7 @@ function AuthModal() {
       }
 
       if (isRegistering) {
-        // Registration succeeded but no token is provided,
-        // so immediately call the login endpoint:
+        // Registration case
         const loginResponse = await fetch(loginUrl, {
           method: "POST",
           headers: headers,
@@ -124,6 +132,7 @@ function AuthModal() {
     }
   };
 
+  // Return the modal
   return (
     <>
       <Dialog
@@ -152,7 +161,7 @@ function AuthModal() {
               {isRegistering ? "Login" : "Register"}
             </button>
           </p>
-          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+          {error && <p className="text-warning text-center mt-2">{error}</p>}
           <form onSubmit={handleSubmit} className="mt-4">
             {isRegistering && (
               <>

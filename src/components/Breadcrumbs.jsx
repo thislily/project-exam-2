@@ -1,6 +1,18 @@
-// Breadcrumbs.jsx
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+
+/**
+ *
+ * @name Breadcrumbs
+ * @description A breadcrumb navigation component.
+ * @param {Object} props - The props object.
+ * @param {string} props.overrideLast - The text to display for the last breadcrumb.
+ * @returns {JSX.Element} The Breadcrumbs component.
+ *
+ * @example
+ * <Breadcrumbs overrideLast="Venue" />
+ *
+ */
 
 const Breadcrumbs = ({ overrideLast }) => {
   const location = useLocation();

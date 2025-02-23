@@ -5,6 +5,13 @@ import ProfilePage from "./pages/ProfilePage.jsx";
 import VenuePage from "./pages/VenuePage.jsx";
 import Layout from "./components/Layout.jsx";
 
+/**
+ * @name App
+ * @description The main application component.
+ * @returns {JSX.Element} The App component.
+ *
+ */
+
 function App() {
   return (
     <Routes>

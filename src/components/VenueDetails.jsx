@@ -1,6 +1,17 @@
 import React from "react";
 import StarRating from "./StarRating";
 
+/**
+ * @name VenueDetails
+ * @description The venue details component.
+ * @param {Object} props - The props object.
+ * @param {Object} props.venue - The venue object.
+ * @param {Array} props.userBookings - The user bookings array.
+ * @param {Function} props.onEditBooking - The function to run when editing a booking.
+ * @returns {JSX.Element} The VenueDetails component.
+ *
+ */
+
 const VenueDetails = ({ venue, userBookings, onEditBooking }) => {
   const { name, description, price, maxGuests, meta, location } = venue;
   const amenities = [];
@@ -56,8 +67,7 @@ const VenueDetails = ({ venue, userBookings, onEditBooking }) => {
       </div>
       <div className="mt-9 text-base text-black">
         <h2 className="font-semibold">Location</h2>
-        {location &&
-        (location.address || location.city || location.country) ? (
+        {location && (location.address || location.city || location.country) ? (
           <>
             {location.address && <p>{location.address}</p>}
             {location.city && <p>{location.city}</p>}

@@ -3,6 +3,13 @@ import { venuesUrl, headers } from "../service/api";
 import VenueCard from "../components/VenueCard";
 import Loader from "../components/Loader";
 
+/**
+ * @name HomePage
+ * @description The home page component.
+ * @returns {JSX.Element} The HomePage component.
+ *
+ */
+
 function HomePage() {
   const [venues, setVenues] = useState([]);
   const [filteredVenues, setFilteredVenues] = useState([]);
@@ -54,6 +61,10 @@ function HomePage() {
     fetchVenues();
   }, [page, sortOption]);
 
+  useEffect(() => {
+    document.title = "Browse Venues | Holidaze";
+  }, []);
+
   // Search functionality with delay
   useEffect(() => {
     const delaySearch = setTimeout(() => {
@@ -64,7 +75,9 @@ function HomePage() {
           venues.filter(
             (venue) =>
               venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              venue.description.toLowerCase().includes(searchQuery.toLowerCase())
+              venue.description
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase())
           )
         );
       }
@@ -87,9 +100,9 @@ function HomePage() {
         }
       },
       {
-        root: null,         // Observe scrolling in the viewport
-        rootMargin: "200px",// Start loading just before it's actually in view
-        threshold: 0,       // Trigger when the loader is near the viewport
+        root: null, // Observe scrolling in the viewport
+        rootMargin: "200px", // Start loading just before it's actually in view
+        threshold: 0, // Trigger when the loader is near the viewport
       }
     );
 

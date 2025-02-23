@@ -2,6 +2,34 @@ import React from "react";
 import { Dialog } from "@headlessui/react";
 import Calendar from "./Calendar";
 
+/**
+ * 
+ * @name BookingModal
+ * @description A modal component for booking a venue.
+ * @param {Object} props - The props object.
+ * @param {boolean} props.isOpen - The modal open state.
+ * @param {Function} props.onClose - The function to close the modal.
+ * @param {string} props.id - The unique identifier of the venue.
+ * @param {Array} props.bookings - The bookings for the venue.
+ * @param {Object} props.selectedDates - The selected dates for booking.
+ * @param {Function} props.onDateChange - A function to handle date changes.
+ * @param {number} props.guestCount - The number of guests.
+ * @param {Function} props.setGuestCount - A function to set the number of guests.
+ * @param {Function} props.onConfirm - A function to confirm the booking.
+ * @param {Function} props.onDelete - A function to delete the booking.
+ * @param {boolean} props.editingBooking - The editing booking state.
+ * @param {boolean} props.bookingConfirmed - The booking confirmed state.
+ * @param {boolean} props.confirmDelete - The delete confirmation state.
+ * @param {Function} props.onCancelDelete - A function to cancel delete confirmation.
+ * @param {Function} props.onRequestDelete - A function to request delete confirmation.
+ * @param {number} props.newTotalCost - The new total cost.
+ * @param {number} props.originalCost - The original cost.
+ * @param {number} props.newCost - The new cost.
+ * @param {number} props.costDiff - The cost difference.
+ * @returns {JSX.Element} The BookingModal component.
+ * 
+ */
+
 const BookingModal = ({
   isOpen,
   onClose,
@@ -59,13 +87,13 @@ const BookingModal = ({
           </div>
         ) : confirmDelete ? (
           <div>
-            <p className="mb-4 text-red-600">
+            <p className="mb-4 text-warning">
               Are you sure you want to delete this booking?
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={onDelete}
-                className="px-4 py-2 bg-red-500 text-white rounded"
+                className="px-4 py-2 bg-warning text-white rounded"
               >
                 Yes, Delete
               </button>

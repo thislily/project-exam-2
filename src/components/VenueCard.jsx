@@ -3,6 +3,16 @@ import { Link } from "react-router-dom";
 import ImageWithFallback from "./ImageWithFallback";
 import StarRating from "./StarRating";
 
+/**
+ * 
+ * @name VenueCard
+ * @description A card component to display venue information.
+ * @param {Object} props - The props object.
+ * @param {Object} props.venue - The venue data object.
+ * @returns {JSX.Element} The VenueCard component.
+ * 
+ */
+
 function VenueCard({ venue }) {
   if (!venue) {
     return <div>Venue data unavailable</div>;

@@ -8,6 +8,13 @@ import Loader from "../components/Loader";
 import Breadcrumbs from "../components/Breadcrumbs";
 import EditProfileModal from "../components/EditProfileModal";
 
+/**
+ * @name ProfilePage
+ * @description The profile page component.
+ * @returns {JSX.Element} The ProfilePage component.
+ * 
+ */
+
 function ProfilePage() {
   const { name } = useParams(); // e.g., /profile/:name
   const [profile, setProfile] = useState(null);
@@ -41,6 +48,13 @@ function ProfilePage() {
       fetchProfile();
     }
   }, [name]);
+
+  useEffect(() => {
+    if (profile && profile.name) {
+      document.title = `${profile.name} |  Holidaze`;
+    }
+  }, [profile]);
+  
 
   // Handler to upgrade the profile to manager.
   const handleUpgrade = async () => {
