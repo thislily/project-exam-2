@@ -1,6 +1,6 @@
 # Holidaze
 
-![Holidaze Screenshot](public/assets/holidaze.jpg)
+![Holidaze Screenshot](assets/holidaze.jpg)
 
 ## 🚀 About the Project
 Holidaze is a web application designed for managing venues and bookings, built with **React**, **Tailwind CSS**, and **React Router**. It allows users to browse venues, search for specific listings, view details, and manage bookings efficiently.
